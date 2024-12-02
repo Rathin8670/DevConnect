@@ -1,24 +1,82 @@
 const express=require("express")
 const connectDb=require("./config/database")
 const User=require("./models/user")
+const {validateSignupData}=require("./utils/validation")
+const bcrypt=require("bcrypt")
 
 const app=express();
 
-// middleware for parsing json data
-app.use(express.json());
+const port=7777
+// Good Practice-- 1st connect the Db then listen on server
+connectDb()
+    .then(()=>{
+        console.log("DB connection successfully")
+        app.listen(port,()=>{
+            console.log("Server is running at port:",port)
+        }) 
+    }) 
+    .catch((err)=>{
+        console.log("DB connection is not done.... due to..")
+        console.log(err)
+    })
 
+
+// middleware for parsing json data from req.body
+app.use(express.json());
 
 // add a user 
 app.post('/signup',async(req,res)=>{
-// instance of a User model(class)
-    const user=new User(req.body)
     try{
-        console.log(user)
+        // Validate user data
+        validateSignupData(req);
+
+        const {firstName,lastName,password,email,skills,photoUrl,gender,about,age}=req.body;
+
+        // Encrypt the Password
+        const hashedPassword=await bcrypt.hash(password,10);
+        console.log(hashedPassword)
+
+        // create a instance of a User model
+        const user=new User({
+            firstName,
+            lastName,
+            password:hashedPassword,
+            email,
+            skills,
+            gender,
+            photoUrl,
+            about,
+            age
+        })
+
+        // save the data in DB
         await user.save();
         res.send("Data save successfully..")
     }catch(err){
-        res.status(400).send("Error saving the error")
+        res.status(400).send("ERROR :"+ err.message)
     }
+})
+
+// login api
+app.post("/login",async(req,res)=>{
+    const {email,password}=req.body;
+
+    try{
+        const user=await User.findOne({email});
+        if(!user){
+            throw new Error("Invalid Credencial.")
+        }
+
+        const isValidPassword=await bcrypt.compare(password,user.password);
+        if(isValidPassword){
+            res.send("Login successful..")
+        }else{
+            throw new Error("Invalid Credencial.") 
+        }
+    }catch(err){
+        res.status(400).send("ERROR :"+ err.message)
+    }
+    
 })
 
 // get user by email
@@ -31,7 +89,7 @@ app.get('/user',async(req,res)=>{
             res.send(user)
         }  
     }catch(err){
-        res.status(400).send("something wrong bro",err.message())
+        res.status(400).send("something wrong bro",err.message)
     }
 })
 
@@ -45,7 +103,7 @@ app.get('/feed',async(req,res)=>{
             res.send(user)
         }  
     }catch(err){
-        res.status(400).send("something wrong bro",err.message())
+        res.status(400).send("something wrong bro"+err.message)
     }
 })
 
@@ -58,7 +116,7 @@ app.delete("/user",async(req,res)=>{
         console.log(user)
         res.send("User deleted succesfully")
     }catch(err){
-        res.status(400).send("something wrong bro",err.message())
+        res.status(400).send("something wrong bro"+err.message)
     }
 })
 
@@ -68,11 +126,21 @@ app.patch('/user',async(req,res)=>{
     const data=req.body;
 
     try{
+        // Data sanitizing
+        // we can't allow email,age for update
+        const allowedUpdate=["firstName","lastName","skills","gender","photoUrl","password","userId"]
+
+        const isUpdateAllowed=Object.keys(data).every((k)=> allowedUpdate.includes(k));
+
+        if(!isUpdateAllowed){
+            throw new Error("Update Not Possible.")
+        }
+
         const user=await User.findByIdAndUpdate(userId,data);
         console.log(user);
         res.send("User updated successfully..")
     }catch(err){
-        res.status(400).send("something wrong bro",err.message());
+        res.status(400).send("Update Not Possible---"+err.message);
     }
 })
 
@@ -90,18 +158,13 @@ app.patch('/user',async(req,res)=>{
 // })
 
 
+// Error Handling Middleware
+app.use("/",(err,req,res,next)=>{
+    if(err){
+        res.status(500).send("Something  went wrong..");
+    }
+});
 
-const port=7777
-// Good Practice-- 1st connect the Db then listen on server
-connectDb()
-    .then(()=>{
-        console.log("DB connection successfully")
-        app.listen(port,()=>{
-            console.log("Server is running at port:",port)
-        })
-    })
-    .catch((err)=>{
-        console.log("DB connection is not done.... due to..")
-        console.log(err)
-    })
+
+
 
