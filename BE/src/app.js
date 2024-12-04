@@ -3,6 +3,10 @@ const connectDb=require("./config/database")
 const User=require("./models/user")
 const {validateSignupData}=require("./utils/validation")
 const bcrypt=require("bcrypt")
+const cookieParser=require("cookie-parser")
+const jwt=require("jsonwebtoken")
+const {userAuth}=require("./middlewares/auth")
+
 
 const app=express();
 
@@ -23,6 +27,10 @@ connectDb()
 
 // middleware for parsing json data from req.body
 app.use(express.json());
+// middleware for parsing cookie data from req.cookies
+app.use(cookieParser())
+const SECRET_VAL="devTinder@123";
+
 
 // add a user 
 app.post('/signup',async(req,res)=>{
@@ -67,22 +75,39 @@ app.post("/login",async(req,res)=>{
             throw new Error("Invalid Credencial.")
         }
 
-        const isValidPassword=await bcrypt.compare(password,user.password);
+        // offloaded the task to userSchema.methods.validPassword()
+        const isValidPassword=await user.validPassword(password);
+
         if(isValidPassword){
+            // Create a jwt token --offload the task to userSchema.methods
+            const token=await user.getJWT();
+            // add the token to the cookie and send the response back to user
+            res.cookie("token",token);
             res.send("Login successful..")
+
         }else{
             throw new Error("Invalid Credencial.") 
         }
+
+    }catch(err){
+        res.status(400).send("ERROR :"+ err.message)
+    }   
+})
+
+app.get("/profile",userAuth,async(req,res)=>{
+    try{
+        const user=req.user;
+        res.send(user)
     }catch(err){
         res.status(400).send("ERROR :"+ err.message)
     }
-    
 })
 
 // get user by email
 app.get('/user',async(req,res)=>{
     try{
         const user=await User.find({email:req.body.email})
+
         if(!user){
             res.status(400).send("something wrong bro")
         }else{

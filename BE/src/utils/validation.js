@@ -9,8 +9,6 @@ const validateSignupData=(req)=>{
         throw new Error("Invalid email format.");
     }else if(!validator.isStrongPassword(password)){
         throw new Error("Invalid password format.");
-    }else if(skills.length>=20){
-        throw new Error("Invalid skills data.");
     }
 }
 
