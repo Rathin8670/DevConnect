@@ -1,12 +1,11 @@
 const express=require("express")
 const connectDb=require("./config/database")
-const User=require("./models/user")
-const {validateSignupData}=require("./utils/validation")
-const bcrypt=require("bcrypt")
 const cookieParser=require("cookie-parser")
-const jwt=require("jsonwebtoken")
-const {userAuth}=require("./middlewares/auth")
 
+const userRouter = require("./routes/user");
+const profileRouter = require("./routes/profile");
+const requestRouter = require("./routes/request");
+const authRouter = require("./routes/auth");
 
 const app=express();
 
@@ -29,159 +28,12 @@ connectDb()
 app.use(express.json());
 // middleware for parsing cookie data from req.cookies
 app.use(cookieParser())
-const SECRET_VAL="devTinder@123";
+//const SECRET_VAL="devTinder@123";
 
-
-// add a user 
-app.post('/signup',async(req,res)=>{
-    try{
-        // Validate user data
-        validateSignupData(req);
-
-        const {firstName,lastName,password,email,skills,photoUrl,gender,about,age}=req.body;
-
-        // Encrypt the Password
-        const hashedPassword=await bcrypt.hash(password,10);
-        console.log(hashedPassword)
-
-        // create a instance of a User model
-        const user=new User({
-            firstName,
-            lastName,
-            password:hashedPassword,
-            email,
-            skills,
-            gender,
-            photoUrl,
-            about,
-            age
-        })
-
-        // save the data in DB
-        await user.save();
-        res.send("Data save successfully..")
-    }catch(err){
-        res.status(400).send("ERROR :"+ err.message)
-    }
-})
-
-// login api
-app.post("/login",async(req,res)=>{
-    const {email,password}=req.body;
-
-    try{
-        const user=await User.findOne({email});
-        if(!user){
-            throw new Error("Invalid Credencial.")
-        }
-
-        // offloaded the task to userSchema.methods.validPassword()
-        const isValidPassword=await user.validPassword(password);
-
-        if(isValidPassword){
-            // Create a jwt token --offload the task to userSchema.methods
-            const token=await user.getJWT();
-            // add the token to the cookie and send the response back to user
-            res.cookie("token",token);
-            res.send("Login successful..")
-
-        }else{
-            throw new Error("Invalid Credencial.") 
-        }
-
-    }catch(err){
-        res.status(400).send("ERROR :"+ err.message)
-    }   
-})
-
-app.get("/profile",userAuth,async(req,res)=>{
-    try{
-        const user=req.user;
-        res.send(user)
-    }catch(err){
-        res.status(400).send("ERROR :"+ err.message)
-    }
-})
-
-// get user by email
-app.get('/user',async(req,res)=>{
-    try{
-        const user=await User.find({email:req.body.email})
-
-        if(!user){
-            res.status(400).send("something wrong bro")
-        }else{
-            res.send(user)
-        }  
-    }catch(err){
-        res.status(400).send("something wrong bro",err.message)
-    }
-})
-
-// get all users 
-app.get('/feed',async(req,res)=>{
-    try{
-        const user=await User.find({})
-        if(!user){
-            res.status(400).send("something wrong bro")
-        }else{
-            res.send(user)
-        }  
-    }catch(err){
-        res.status(400).send("something wrong bro"+err.message)
-    }
-})
-
-// delete a user by id
-app.delete("/user",async(req,res)=>{
-    const userId=req.body.userId;
-
-    try{
-        const user=await User.findByIdAndDelete(userId);
-        console.log(user)
-        res.send("User deleted succesfully")
-    }catch(err){
-        res.status(400).send("something wrong bro"+err.message)
-    }
-})
-
-// update a user
-app.patch('/user',async(req,res)=>{
-    const userId=req.body.userId;
-    const data=req.body;
-
-    try{
-        // Data sanitizing
-        // we can't allow email,age for update
-        const allowedUpdate=["firstName","lastName","skills","gender","photoUrl","password","userId"]
-
-        const isUpdateAllowed=Object.keys(data).every((k)=> allowedUpdate.includes(k));
-
-        if(!isUpdateAllowed){
-            throw new Error("Update Not Possible.")
-        }
-
-        const user=await User.findByIdAndUpdate(userId,data);
-        console.log(user);
-        res.send("User updated successfully..")
-    }catch(err){
-        res.status(400).send("Update Not Possible---"+err.message);
-    }
-})
-
-// app.put('/user',async(req,res)=>{
-//     const userId=req.body.userId;
-//     const data=req.body;
-
-//     try{
-//         const user=await User.findByIdAndUpdate(userId,data);
-//         console.log(user);
-//         res.send("User updated successfully..")
-//     }catch(err){
-//         res.status(400).send("something wrong bro",err.message());
-//     }
-// })
-
+app.use('/',authRouter)
+app.use("/",profileRouter)
+app.use('/',userRouter)
+app.use('/',requestRouter)
 
 // Error Handling Middleware
 app.use("/",(err,req,res,next)=>{
