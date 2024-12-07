@@ -18,19 +18,20 @@ requestRouter.post('/request/send/:status/:toUserId',userAuth,async(req,res)=>{
             {toUserId:fromUserId,fromUserId:toUserId}]
         });
         if(user){
-            res.status(404).json({message:`Invalid connection request.`})
+            return  res.status(404).json({message:`Invalid connection request`
+            })
         }
 
         // 1. check for valid status
         const allowedStatus=['ignored','interested'];
         if(!allowedStatus.includes(status)){
-            res.status(404).json({message:"Status invalid!!"})
+            return res.status(404).json({message:"Status invalid!!"})
         }
 
         // 2. toUserId is not in DB
         const toUser=await User.findById(toUserId);
         if(!toUser){
-            res.status(404).json({message:`User not Found.`})
+            return res.status(404).json({message:`User not Found.`})
         }
 
         // 3. check toUserId is not the with fromUserId
@@ -44,11 +45,47 @@ requestRouter.post('/request/send/:status/:toUserId',userAuth,async(req,res)=>{
         })
         const data = await connectionRequest.save(connectionRequest);
 
-        res.json({message:`${req.user.firstName} sends request successfully to ${toUser.firstName}.`,data:data})
+        res.json({message:`${req.user.firstName} ${req.params.status=="interested"?"show interest to":"ignored "} ${toUser.firstName}.`,data:data})
 
     }catch(err){
         res.status(400).send("ERROR :"+ err.message)
     }
 }) 
+
+requestRouter.post('/request/review/:status/:requestId',userAuth,async(req,res)=>{
+    const loggedInUser=req.user;
+    const {status,requestId}=req.params;
+
+    // validate status
+    // A->B
+    // loggedInUser (B) 
+    // validate reqId
+    // loggedInuser._id = toUserId._id && status should be "interested"
+    try{
+        const allowedStatus=["accepted","rejected"]
+        if(!allowedStatus.includes(status)){
+            return res.status(404).json({message:"Status is not valid."})
+        }
+
+        const isValidUser=await ConnectionRequest.findOne({
+            _id:requestId,
+            toUserId:loggedInUser._id,
+            status:"interested"
+        })
+
+        if(!isValidUser){
+            return res.status(404).json({message:"User is not found."})
+        }
+
+        isValidUser.status=status;
+        const data = await isValidUser.save();
+        res.json({message:`Your request is ${status}.`,data:data})
+        
+    }catch(err){
+        res.status(400).send("ERROR :"+ err.message)
+    }
+    
+
+})
 
 module.exports=requestRouter;

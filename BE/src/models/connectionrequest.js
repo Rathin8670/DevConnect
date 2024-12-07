@@ -3,11 +3,13 @@ const mongoose=require("mongoose")
 const connectionRequestSchema=new mongoose.Schema({
     fromUserId:{
         type:mongoose.Schema.Types.ObjectId,
+        ref:"User", // reference to user collection
         require:true,
 
     },
     toUserId:{
         type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
         require:true,
     },
     status:{
@@ -19,6 +21,11 @@ const connectionRequestSchema=new mongoose.Schema({
     }
 },{timestamps:true})
 
+// compound indexes
+connectionRequestSchema.index({
+    toUserId:1,
+    fromUserId:-1
+}) 
 connectionRequestSchema.pre("save",function(next){
     const connectionRequest=this;
     if(connectionRequest.fromUserId.equals(connectionRequest.toUserId)){
