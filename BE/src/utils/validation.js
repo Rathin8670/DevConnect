@@ -12,6 +12,15 @@ const validateSignupData=(req)=>{
     }
 }
 
+const validateLoginData=(req)=>{
+    const {password,email}=req.body;
+    if(!validator.isEmail(email)){
+        throw new Error("Invalid email format.");
+    }else if(!validator.isStrongPassword(password)){
+        throw new Error("Invalid password format.");
+    }
+}
 module.exports={
-    validateSignupData
+    validateSignupData,
+    validateLoginData
 }

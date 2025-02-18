@@ -10,9 +10,12 @@ requestRouter.post('/request/send/:status/:toUserId',userAuth,async(req,res)=>{
     try{
         const toUserId=req.params.toUserId;
         const  status=req.params.status;
+
         const fromUserId=req.user._id;
 
         // 0. check if already existing user  in DB 
+        //  A sent a request to B.
+        //  or,  B sent a request to A.
         const user=await ConnectionRequest.findOne({
             $or:[{toUserId,fromUserId},
             {toUserId:fromUserId,fromUserId:toUserId}]
@@ -34,7 +37,7 @@ requestRouter.post('/request/send/:status/:toUserId',userAuth,async(req,res)=>{
             return res.status(404).json({message:`User not Found.`})
         }
 
-        // 3. check toUserId is not the with fromUserId
+        // 3. check toUserId is not the with fromUserId (A tries to send a req to A)
         // we offload this task to schema.pre("save")
     
         // make a instance of CR and save in DB

@@ -1,4 +1,4 @@
-# devTinder
+# devConnect
 
 ## authRouter
 - POST /signup

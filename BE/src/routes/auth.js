@@ -1,6 +1,6 @@
 const express=require("express")
 const User=require("../models/user")
-const {validateSignupData}=require("../utils/validation")
+const {validateSignupData,validateLoginData}=require("../utils/validation")
 const bcrypt=require("bcrypt")
 
 const authRouter=express.Router();
@@ -41,6 +41,8 @@ authRouter.post('/signup',async(req,res)=>{
 authRouter.post("/login",async(req,res)=>{
     const {email,password}=req.body;
 
+    validateLoginData(req)
+    
     try{
         const user=await User.findOne({email});
         if(!user){
@@ -57,7 +59,7 @@ authRouter.post("/login",async(req,res)=>{
             res.cookie("token",token,{
                 expires: new Date(Date.now() + 8*360000) 
             });
-            res.send("Login successful..")
+            res.send(user)
 
         }else{
             throw new Error("Invalid Credencial.") 
