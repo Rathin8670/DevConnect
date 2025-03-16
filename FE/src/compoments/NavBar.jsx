@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { BASE_URL } from "../utils/constants";
+import axios from "axios";
 
 function NavBar() {
   const user = useSelector((store) => store.user);
@@ -12,6 +14,16 @@ function NavBar() {
     setImgError(true);
   };
 
+  const handleLogout=async()=>{
+    try{
+      await axios.post(BASE_URL+"/logout",
+        {},
+        {withCredentials:true}
+      );
+    }catch(err){
+      console.log(err);
+    }
+  }
   return (
     <div className="bg-white border-gray-200 dark:bg-gray-900">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -19,7 +31,7 @@ function NavBar() {
           <Link to={'/'} >
           <p className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">🧑🏼‍💻 DevConnect</p></Link>
         </div>
-       
+      
         <div className="relative flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
           {/* Profile Picture with Click */}
           <div className="relative">
@@ -57,29 +69,18 @@ function NavBar() {
 
 
                 <ul className="py-2">
-                <li>
-                    <Link
-                      to={'/profile'}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                    >
-                      Profile
-                    </Link>
+                <Link to={'/profile'}>
+                  <li className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"> Profile
                   </li>
-                  <li>
-                    <Link
-                      to={'/update'}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                    >
-                      Settings
-                    </Link>
+                  </Link>
+
+                  <Link to={'/update'}>
+                  <li className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"> Setting
                   </li>
-                  <li>
-                    <Link
-                      to={'/logout'}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                    >
-                      Log out
-                    </Link>
+                  </Link>
+
+                  <li className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer" 
+                  onClick={handleLogout} >Log out
                   </li>
                 </ul>
               </div>
