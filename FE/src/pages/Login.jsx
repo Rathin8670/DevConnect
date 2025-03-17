@@ -2,12 +2,12 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios'
 import { useDispatch } from "react-redux";
-import { addUser } from "../utils/userSlice";
-import { BASE_URL } from "../utils/constants";
+import { addUser } from "../utils/userSlice.js";
+import { BASE_URL } from "../utils/constants.js";
 
 
 export const Login=()=>{
-    const [password,setPassword]=useState("");
+    const [password,setPassword]=useState("Sana@123");
     const [email,setEmail]=useState("");
     const navigate=useNavigate();
 

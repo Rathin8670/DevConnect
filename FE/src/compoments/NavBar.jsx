@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { BASE_URL } from "../utils/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { BASE_URL } from "../utils/constants.js";
 import axios from "axios";
 
 function NavBar() {
@@ -13,13 +13,18 @@ function NavBar() {
   const handleImageError = () => {
     setImgError(true);
   };
+  const dispatch=useDispatch();
+  const navigate=useNavigate();
 
   const handleLogout=async()=>{
+
     try{
       await axios.post(BASE_URL+"/logout",
         {},
         {withCredentials:true}
       );
+      dispatch(removeUser());
+      navigate("/login")
     }catch(err){
       console.log(err);
     }
@@ -78,7 +83,6 @@ function NavBar() {
                   <li className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"> Setting
                   </li>
                   </Link>
-
                   <li className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer" 
                   onClick={handleLogout} >Log out
                   </li>
