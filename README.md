@@ -10,4 +10,8 @@
 - You should not be access other routes without login
 - If token is not present redirect user to login page.
 - logout page 
-- 
+- get the feed and add it in store
+- usercard for feed page
+
+ 1.26min
+ editprofile 

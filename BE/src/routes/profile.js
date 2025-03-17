@@ -23,7 +23,7 @@ profileRouter.patch('/profile/edit',userAuth,async(req,res)=>{
 
     try{
         // Data sanitizing -- we can't allow email,age,password for update
-        const allowedUpdate=["firstName","lastName","skills","gender","photoUrl","userId","about"]
+        const allowedUpdate=["firstName","lastName","skills","gender","photoUrl","userId","about","lookingFor","age"]
 
         const isUpdateAllowed=Object.keys(req.body).every((k)=> allowedUpdate.includes(k));
 
