@@ -10,6 +10,8 @@ const cors =require("cors")
 const app=express();
 app.use(cors({
     origin:"http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials:true
 }))
 const port=7777

@@ -7,10 +7,9 @@ export const Profile = () => {
     const user=useSelector((store)=>store.user)
     
     return user && (
-        <div className='flex justify-center'>
-            <div>
+        <div>
+            
             <EditProfile user={user}/>
-            </div>
         </div>
 
     )

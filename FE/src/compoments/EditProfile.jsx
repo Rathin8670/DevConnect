@@ -5,39 +5,41 @@ import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
 
 export const EditProfile = ({user}) => {
-    const [firstName,setFirstName]=useState(user.firstName);
-    const [lastName,setLastName]=useState(user.lastName);
-    const [about,setAbout]=useState(user.about);
-    const [skills,setSkills]=useState(user.skills)
-    const [gender,setGender]=useState(user.gender);
-    const [photoUrl,setPhotoUrl]=useState(user.photoUrl);
-    const [age,setAge]=useState(user.age)
+    const [firstName, setFirstName] = useState(user?.firstName || "");
+    const [lastName, setLastName] = useState(user?.lastName || "");
+    const [about, setAbout] = useState(user?.about || "");
+    const [gender, setGender] = useState(user?.gender || "");
+    //const [photoUrl, setPhotoUrl] = useState(user?.photoUrl || "");
+    const [age, setAge] = useState(user?.age || "");
+
     const [error,setError]=useState("")
 
     const dispatch=useDispatch();
 
-    const saveProfile= async()=>{
+    const saveProfile=async()=>{
+        console.log("hii")
         try{
-            const res=await axios.patch(BASE_URL+"/profile/edit",
+            const res = await axios.put(
+                BASE_URL + "/profile/edit",
                 {
                     firstName,
                     lastName,
-                    about,
-                    skills,
-                    gender,
                     age,
-                    photoUrl
+                    gender,
+                    about,
                 },
-                {withCredentials:true}
-            )
-
-            dispatch(addUser(res?.data?.data))
+                { withCredentials: true }
+              );
+            console.log("hell")
+            console.log(res.data?.data?.updatedUser)
+            dispatch(addUser(res?.data?.data?.updatedUser))
         }catch(err){
-            setError(err.message)
+            setError(err.message);
+
         }
         
     }
-   // console.log(firstName+" "+lastName)
+   
     return (
         <div className="py-10 my-auto dark:bg-gray-900">
             <div className="lg:w-[80%] md:w-[90%] w-[96%] mx-auto flex gap-4">
@@ -51,9 +53,7 @@ export const EditProfile = ({user}) => {
                             <div className="mx-auto flex justify-center w-[141px] h-[141px] bg-blue-300/20 rounded-full bg-[url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHw4fHxwcm9maWxlfGVufDB8MHx8fDE3MTEwMDM0MjN8MA&ixlib=rb-4.0.3&q=80&w=1080')] bg-cover bg-center bg-no-repeat">
 
                             <div className="bg-white/90 rounded-full w-6 h-6 text-center ml-28 mt-4">
-                                <input type="file" name="profile" id="upload_profile" hidden required />
-
-                                <label for="upload_profile">
+                                <label >
                                     <svg data-slot="icon" className="w-6 h-5 text-blue-700" fill="none"
                                         stroke-width="1.5" stroke="currentColor" viewBox="0 0 24 24"
                                         xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -72,7 +72,7 @@ export const EditProfile = ({user}) => {
                             </h2>
                             <div className="flex flex-col lg:flex-row gap-2 justify-center w-full">
                                 <div className="w-full  mb-4 mt-6">
-                                    <label for="" className="mb-2 dark:text-gray-300">First Name</label>
+                                    <label  className="mb-2 dark:text-gray-300">First Name</label>
                                     <input type="text"
                                         className="mt-2 p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"
                                         placeholder="First Name"
@@ -80,24 +80,17 @@ export const EditProfile = ({user}) => {
                                         onChange={(e)=> setFirstName(e.target.value)} />
                                 </div>
                                 <div className="w-full  mb-4 mt-6">
-                                    <label for="" className="mb-2 dark:text-gray-300">Last Name</label>
+                                    <label  className="mb-2 dark:text-gray-300">Last Name</label>
                                     <input type="text"
                                         className="mt-2 p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"
                                         placeholder="Last Name"
                                         value={lastName}
                                         onChange={(e)=> setLastName(e.target.value)} />
                                 </div>
-                                <div className="w-full  mb-4 mt-6">
-                                    <label for="" className="mb-2 dark:text-gray-300">Skills</label>
-                                    <input type="text"
-                                        className="mt-2 p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"
-                                        placeholder="Skills"
-                                        value={skills}
-                                        onChange={(e)=> setSkills(e.target.value)} />
-                                </div>
+                               
                             </div>
                             <div className="w-full  mb-4 mt-6">
-                                    <label for="" className="mb-2 dark:text-gray-300">About</label>
+                                    <label  className="mb-2 dark:text-gray-300">About</label>
                                     <input type="text"
                                         className="mt-2 p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"
                                         placeholder="About"
@@ -105,23 +98,25 @@ export const EditProfile = ({user}) => {
                                         onChange={(e)=> setAbout(e.target.value)} />
                                 </div>
                             <div className="flex flex-col lg:flex-row  gap-2 justify-center w-full">
-                                <div className="w-full">
-                                    <h3 className="dark:text-gray-300 mb-2">Sex</h3>
-                                    <select
-                                        className="w-full text-grey border-2 rounded-lg p-4 pl-2 pr-2 dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800">
-                                        <option disabled value="">Select Sex</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                    </select>
+                            <div className="w-full  mb-4 mt-6">
+                                    <label  className="mb-2 dark:text-gray-300">Gender</label>
+                                    <input type="text"
+                                        className="mt-2 p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"
+                                        placeholder="sex"
+                                        value={gender}
+                                        onChange={(e)=> setGender(e.target.value)} />
                                 </div>
-                                <div className="w-full">
-                                    <h3 className="dark:text-gray-300 mb-2">Age</h3>
-                                    <input 
-                                        className="text-grey p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800" />
+                                <div className="w-full  mb-4 mt-6">
+                                    <label  className="mb-2 dark:text-gray-300">Age</label>
+                                    <input type="text"
+                                        className="mt-2 p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"
+                                        placeholder="sex"
+                                        value={age}
+                                        onChange={(e)=> setAge(e.target.value)} />
                                 </div>
                             </div>
                             <div className="w-full rounded-lg bg-blue-500 mt-4 text-white text-lg font-semibold">
-                                <button type="submit" className="w-full p-4"
+                                <button type="submit" className="w-full p-4 cursor-pointer"
                                 onClick={saveProfile}>Save Profile</button>
                             </div>
                         </form>
@@ -131,3 +126,14 @@ export const EditProfile = ({user}) => {
         </div>
     )
 }
+
+{/* <div className="flex flex-col lg:flex-row  gap-2 justify-center w-full">
+<div className="w-full">
+    <h3 className="dark:text-gray-300 mb-2">Sex</h3>
+    <select
+        className="w-full text-grey border-2 rounded-lg p-4 pl-2 pr-2 dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800">
+        <option disabled value="">Select Sex</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+    </select>
+</div> */}

@@ -17,7 +17,7 @@ profileRouter.get("/profile/view",userAuth,async(req,res)=>{
 })
 
 // update a user profile details
-profileRouter.patch('/profile/edit',userAuth,async(req,res)=>{
+profileRouter.put('/profile/edit',userAuth,async(req,res)=>{
     // loggedin user id
     const userId=req.user._id;
 
