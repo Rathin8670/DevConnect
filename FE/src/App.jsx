@@ -5,10 +5,10 @@ import appStore from "./utils/appStore.js"
 import {Provider} from"react-redux"
 import { Profile } from "./pages/Profile"
 import { Feed } from "./compoments/Feed"
+import { Connections } from "./pages/Connections.jsx"
+import { Request } from "./pages/Request.jsx"
 
 function App() {
-  
-
   return (
     <>
     <Provider store={appStore}>
@@ -18,6 +18,8 @@ function App() {
             <Route path="/" element={<Feed/>}></Route>
             <Route path="/login" element={<Login/>}></Route>
             <Route path="/profile" element={<Profile/>}></Route>
+            <Route path="/connections" element={<Connections/>}></Route>
+            <Route path="/requests" element={<Request/>}></Route>
           </Route>
         </Routes>
       </BrowserRouter>  

@@ -8,7 +8,6 @@ export const Profile = () => {
     
     return user && (
         <div>
-            
             <EditProfile user={user}/>
         </div>
 

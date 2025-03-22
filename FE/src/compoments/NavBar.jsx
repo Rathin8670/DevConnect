@@ -80,8 +80,12 @@ function NavBar() {
                   </li>
                   </Link>
 
-                  <Link to={'/update'}>
-                  <li className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"> Setting
+                  <Link to={'/connections'}>
+                  <li className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"> Connections
+                  </li>
+                  </Link>
+                  <Link to={'/requests'}>
+                  <li className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"> Requests
                   </li>
                   </Link>
                   <li className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white cursor-pointer" 
