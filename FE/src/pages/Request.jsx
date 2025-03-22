@@ -25,6 +25,13 @@ export const Request = () => {
     useEffect(()=>{
         fetchRequests();
     },[])
+
+    if(!requests) return;
+    if(requests.length ===0 )return(
+        <div className='flex justify-center text-2xl font-medium'>
+            No Requests are found.
+        </div>
+    )
     return (
     <div className="grid gap-4  justify-center">
             {requests.map((res)=>(<RequestCard user={res}/>))}
