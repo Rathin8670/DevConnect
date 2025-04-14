@@ -15,7 +15,7 @@ export const Feed=()=>{
                 const res=await axios.get(BASE_URL+"/user/feed",
                     {withCredentials:true}
                 )
-               // console.log(res);
+                console.log(res?.data?.data);
                 dispatch(addFeed(res?.data?.data))
             }catch(err){
                 console.error("ERR in feed API.", err);
@@ -26,9 +26,11 @@ export const Feed=()=>{
         getFeed()
     },[])
 
+    if(!feed) return;
+    if(feed.length <=0) return <h1 className="flex justify-center">No more User Found.</h1>
     return feed && (
         <div className="m-20 flex justify-center">
-            <UserCard user={feed[5]}/>
+            <UserCard user={feed[0]}/>
         </div>
     )
 }
