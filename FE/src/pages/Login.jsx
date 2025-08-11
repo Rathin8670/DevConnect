@@ -7,8 +7,8 @@ import { BASE_URL } from "../utils/constants.js";
 
 
 export const Login=()=>{
-    const [password,setPassword]=useState("Rath@123");
-    const [email,setEmail]=useState("rathin@gmail.com");
+    const [password,setPassword]=useState("");
+    const [email,setEmail]=useState("");
     const navigate=useNavigate();
 
     const dispatch=useDispatch()
@@ -21,8 +21,8 @@ export const Login=()=>{
                 withCredentials:true
             })
             dispatch(addUser(res.data));
-          //  console.log(res.data)
-            navigate("/")
+           // console.log(res.data)
+            navigate("/user/feed")
 
         }catch(err){
             console.log("Error:"+err)

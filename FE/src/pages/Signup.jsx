@@ -6,10 +6,10 @@ import { addUser } from "../utils/userSlice";
 import { useNavigate } from "react-router-dom";
 
 export const Signup = () => {
-    const [firstName, setFirstName] = useState("Soura");
-    const [lastName, setLastName] = useState("Mondal");
-    const [email,setEmail]=useState("soura@gmail.com");
-    const [password,setPassword]=useState("Sour1234");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email,setEmail]=useState("");
+    const [password,setPassword]=useState("");
     const [about, setAbout] = useState("");
     const [gender, setGender] = useState( "");
     const [skills,setSkills]=useState("")
@@ -37,7 +37,7 @@ export const Signup = () => {
             );
             //console.log(res.data)
             dispatch(addUser(res?.data))
-            navigate("/");
+            navigate("/user/feed");
         }catch(err){
             console.error("Signup failed:", err?.response?.data || err.message);
             alert(err?.response?.data?.message || "Signup failed");

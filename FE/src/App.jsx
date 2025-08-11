@@ -8,6 +8,7 @@ import { Feed } from "./compoments/Feed"
 import { Connections } from "./pages/Connections.jsx"
 import { Request } from "./pages/Request.jsx"
 import { Signup } from "./pages/Signup.jsx"
+import { LandingPage } from "./compoments/LandingPage.jsx"
 
 function App() {
   return (
@@ -16,7 +17,9 @@ function App() {
       <BrowserRouter basename="/">
         <Routes>
           <Route path='/' element={<Body/>}>
+            <Route index element={<LandingPage/>}></Route>
             <Route path="/" element={<Feed/>}></Route>
+            <Route path="/user/feed" element={<Feed/>}></Route>
             <Route path="/login" element={<Login/>}></Route>
             <Route path="/signup" element={<Signup/>}/>
             <Route path="/profile" element={<Profile/>}></Route>

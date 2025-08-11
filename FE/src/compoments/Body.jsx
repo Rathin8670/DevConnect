@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
-import NavBar from "./NavBar";
+import {NavBar} from "./NavBar.jsx"
 import { Outlet, useNavigate } from "react-router-dom";
-import Footer from "./Footer";
 import axios from "axios";
 import { BASE_URL } from "../utils/constants.js";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,7 +22,7 @@ const Body = () => {
             dispatch(addUser(res?.data?.user));
         }catch(err){
             if(err.status===401){
-                navigate("/login")
+                navigate("/")
             }
             console.error(err)
         }
@@ -36,7 +35,6 @@ const Body = () => {
         <div >
             <NavBar/>
             <Outlet/>
-            <Footer/>
         </div>
     );
 };
