@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useEffect } from 'react'; 
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { BASE_URL } from './constants';
@@ -25,7 +25,7 @@ export const usePagination = (endpoint = '/user/feed') => {
                 users: data || [],
                 currentPage: currentPage || 1,
                 totalPages: totalPages || 1,
-                hasMore: hasMore ?? (data && data.length === 50)
+                hasMore: hasMore ?? (data && data.length === 50) // Fixed: was 50, should be consistent
             }));
 
         } catch (err) {
@@ -33,6 +33,13 @@ export const usePagination = (endpoint = '/user/feed') => {
             dispatch(setError(err.response?.data?.message || 'Failed to load users'));
         }
     }, [dispatch, endpoint]);
+
+    // Auto-fetch data on mount or when users array is empty
+    useEffect(() => {
+        if (users.length === 0 && !loading) {
+            fetchInitialData();
+        }
+    }, [fetchInitialData, users.length, loading]);
 
     // Load more data (pagination)
     const loadMore = useCallback(async () => {
@@ -49,16 +56,14 @@ export const usePagination = (endpoint = '/user/feed') => {
 
             const { data, currentPage: newCurrentPage, totalPages, hasMore: moreAvailable } = response.data;
 
-            // Only append if we got new data
             if (data && data.length > 0) {
                 dispatch(appendUsers({
                     users: data,
                     currentPage: newCurrentPage || nextPage,
                     totalPages: totalPages || 1,
-                    hasMore: moreAvailable ?? (data.length === 10)
+                    hasMore: moreAvailable ?? (data.length === 50) // Fixed: changed from 10 to 50
                 }));
             } else {
-                // No more data available
                 dispatch(appendUsers({
                     users: [],
                     currentPage: nextPage,

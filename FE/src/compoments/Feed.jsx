@@ -2,8 +2,16 @@
 import { useEffect, useState } from "react";
 import { UserCard } from "./UserCard.jsx";
 import { usePagination } from "../utils/usePagination.js";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export const Feed = () => {
+    const navigate=useNavigate();
+
+    const userData=useSelector((store)=> store.user)
+    if(!userData){
+        navigate("/login");
+    }
     const {
         users,
         hasMore,
