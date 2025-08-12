@@ -15,7 +15,7 @@ export const usePagination = (endpoint = '/user/feed') => {
         try {
             dispatch(setLoading(true));
 
-            const response = await axios.get(`${BASE_URL}${endpoint}?page=1&limit=10`, {
+            const response = await axios.get(`${BASE_URL}${endpoint}?page=1&limit=50`, {
                 withCredentials: true
             });
 
@@ -25,7 +25,7 @@ export const usePagination = (endpoint = '/user/feed') => {
                 users: data || [],
                 currentPage: currentPage || 1,
                 totalPages: totalPages || 1,
-                hasMore: hasMore ?? (data && data.length === 10)
+                hasMore: hasMore ?? (data && data.length === 50)
             }));
 
         } catch (err) {
@@ -43,7 +43,7 @@ export const usePagination = (endpoint = '/user/feed') => {
 
             const nextPage = currentPage + 1;
             const response = await axios.get(
-                `${BASE_URL}${endpoint}?page=${nextPage}&limit=10`,
+                `${BASE_URL}${endpoint}?page=${nextPage}&limit=50`,
                 { withCredentials: true }
             );
 
